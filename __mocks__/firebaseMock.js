@@ -1,0 +1,13 @@
+export const initializeApp = jest.fn();
+export const getAnalytics = jest.fn();
+export const getAuth = jest.fn();
+export const GoogleAuthProvider = jest.fn();
+export const signInWithPopup = jest.fn();
+export const signOut = jest.fn();
+export const getFirestore = jest.fn();
+export const doc = jest.fn();
+export const setDoc = jest.fn();
+export const getDoc = jest.fn();
+export const increment = jest.fn();
+export const updateDoc = jest.fn();
+export const onAuthStateChanged = jest.fn();

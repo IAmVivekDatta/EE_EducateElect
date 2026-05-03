@@ -1,0 +1,36 @@
+{
+  "name": "election-process-education",
+  "version": "1.0.0",
+  "description": "VotePath AI is a premium, full-scale Election Process Education Platform. It transforms the often confusing and dense election journey into an interactive, multi-screen dashboard with visual storytelling, AI-powered guidance, and persona-aware content — all built with pure HTML, CSS, and ES6 JavaScript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:e2e": "cypress run",
+    "lint": "eslint js/**/*.js",
+    "format": "prettier --write \"js/**/*.js\" \"styles.css\" \"*.html\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IAmVivekDatta/EE_EducateElect.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/IAmVivekDatta/EE_EducateElect/issues"
+  },
+  "homepage": "https://github.com/IAmVivekDatta/EE_EducateElect#readme",
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.3",
+    "babel-jest": "^30.3.0",
+    "cypress": "^15.14.2",
+    "eslint": "^10.3.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
+    "prettier": "^3.8.3"
+  }
+}

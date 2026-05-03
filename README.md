@@ -41,10 +41,14 @@ Gemini branding header, secure password input, direct link to Google AI Studio, 
 3. **Event Delegation**: After DOM injection, `attachEvents()` binds listeners to the new DOM elements.
 4. **Persona Engine**: Selecting a persona saves to `localStorage` and re-renders. Timeline injects persona-specific hints dynamically.
 
-## 6. 🔗 Google Services Integration (Gemini API)
-- **API Flow**: User types question → key read from `localStorage` → `systemPrompt` built with persona context → fetch to Gemini API → response cleaned and rendered as HTML.
-- **Fallback**: No key or API failure → `getInternalFallbackResponse()` keyword-matches `data.js` for pre-vetted answers.
-- **Security**: Key stored only in browser `localStorage`, never in source code.
+## 6. 🔗 Google Services Integration
+- **Google Analytics (GA4)**: Tracks user engagement, feature usage, and interactions on the platform.
+- **Firebase Authentication**: Provides secure "Sign in with Google" OAuth for personalized access and user profiles.
+- **Firebase Firestore**: Securely syncs user Gemini API keys across devices and tracks API call usage per user to monitor interaction limits.
+- **Gemini API Integration**: 
+  - **API Flow**: User types question → key read from Firestore or `localStorage` → `systemPrompt` built with persona context → fetch to Gemini API → response cleaned and rendered as HTML.
+  - **Fallback**: No key or API failure → `getInternalFallbackResponse()` keyword-matches `data.js` for pre-vetted answers.
+  - **Security**: Key stored only in browser `localStorage` or Firebase secure profile, never in source code.
 
 ## 7. 🧪 Testing Strategy
 - [x] Routing: All 6 sidebar links render correct views

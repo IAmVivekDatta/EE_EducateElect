@@ -1,6 +1,7 @@
 import { state, setPersona, setActiveTimelineStep, setDecisionFlowNode, addChatMessage, setApiKey } from './state.js';
 import { electionData } from './data.js';
 import { generateAssistantResponse } from './api.js';
+import { saveUserApiKey } from './firebase.js';
 
 export const renderTo = (elementId, html) => {
     const el = document.getElementById(elementId);
@@ -20,7 +21,7 @@ const svgIcons = {
 };
 
 const stepIcons = ['register', 'verify', 'candidate', 'prepare', 'vote', 'results'];
-const stepColors = ['#38bdf8','#a78bfa','#34d399','#fbbf24','#f87171','#38bdf8'];
+const stepColors = ['#38bdf8', '#a78bfa', '#34d399', '#fbbf24', '#f87171', '#38bdf8'];
 
 function sanitizeText(str) {
     const d = document.createElement('div');
@@ -30,18 +31,52 @@ function sanitizeText(str) {
 
 export const views = {
     home: () => {
-        const persona = electionData.personas.find(p => p.id === state.selectedPersona);
-        const personaButtons = electionData.personas.map(p => `
+        const persona = electionData.personas.find((p) => p.id === state.selectedPersona);
+        const personaButtons = electionData.personas
+            .map(
+                (p) => `
             <button class="persona-btn ${p.id === state.selectedPersona ? 'active' : ''}" data-id="${p.id}">
                 <span class="material-symbols-outlined">${p.icon}</span> ${p.label}
-            </button>`).join('');
+            </button>`
+            )
+            .join('');
 
         const navCards = [
-            { href: '#timeline', icon: 'linear_scale', label: 'Process Timeline', desc: 'Step-by-step election journey', color: '#38bdf8', bg: 'rgba(56,189,248,0.08)' },
-            { href: '#assistant', icon: 'smart_toy', label: 'AI Assistant', desc: 'Ask questions, get instant answers', color: '#a78bfa', bg: 'rgba(167,139,250,0.08)' },
-            { href: '#learning', icon: 'library_books', label: 'Learning Hub', desc: 'Concepts, myths, and facts', color: '#34d399', bg: 'rgba(52,211,153,0.08)' },
-            { href: '#guidance', icon: 'explore', label: 'Smart Guidance', desc: 'Not sure where to start?', color: '#fbbf24', bg: 'rgba(251,191,36,0.08)' },
-        ].map(c => `
+            {
+                href: '#timeline',
+                icon: 'linear_scale',
+                label: 'Process Timeline',
+                desc: 'Step-by-step election journey',
+                color: '#38bdf8',
+                bg: 'rgba(56,189,248,0.08)',
+            },
+            {
+                href: '#assistant',
+                icon: 'smart_toy',
+                label: 'AI Assistant',
+                desc: 'Ask questions, get instant answers',
+                color: '#a78bfa',
+                bg: 'rgba(167,139,250,0.08)',
+            },
+            {
+                href: '#learning',
+                icon: 'library_books',
+                label: 'Learning Hub',
+                desc: 'Concepts, myths, and facts',
+                color: '#34d399',
+                bg: 'rgba(52,211,153,0.08)',
+            },
+            {
+                href: '#guidance',
+                icon: 'explore',
+                label: 'Smart Guidance',
+                desc: 'Not sure where to start?',
+                color: '#fbbf24',
+                bg: 'rgba(251,191,36,0.08)',
+            },
+        ]
+            .map(
+                (c) => `
             <a href="${c.href}" class="dash-card" style="--card-accent:${c.color};--card-bg:${c.bg}">
                 <div class="dash-icon-wrap" style="background:${c.bg};border-color:${c.color}22">
                     <span class="material-symbols-outlined" style="color:${c.color};font-size:2rem">${c.icon}</span>
@@ -49,7 +84,9 @@ export const views = {
                 <h4>${c.label}</h4>
                 <p>${c.desc}</p>
                 <span class="dash-arrow" style="color:${c.color}">→</span>
-            </a>`).join('');
+            </a>`
+            )
+            .join('');
 
         return `
             <div class="hero-banner fade-in">
@@ -78,21 +115,23 @@ export const views = {
 
     timeline: () => {
         const total = electionData.timeline.length;
-        const activeIdx = electionData.timeline.findIndex(s => s.id === state.activeTimelineStep);
+        const activeIdx = electionData.timeline.findIndex((s) => s.id === state.activeTimelineStep);
         const pct = activeIdx >= 0 ? Math.round(((activeIdx + 1) / total) * 100) : 0;
 
-        const nodes = electionData.timeline.map((step, i) => {
-            const isActive = step.id === state.activeTimelineStep;
-            const icon = svgIcons[stepIcons[i]] || '';
-            const color = stepColors[i];
-            const ctx = step.personaContext[state.selectedPersona]
-                ? `<div class="persona-context-note"><span class="material-symbols-outlined info-icon">person_pin</span> ${step.personaContext[state.selectedPersona]}</div>` : '';
+        const nodes = electionData.timeline
+            .map((step, i) => {
+                const isActive = step.id === state.activeTimelineStep;
+                const icon = svgIcons[stepIcons[i]] || '';
+                const color = stepColors[i];
+                const ctx = step.personaContext[state.selectedPersona]
+                    ? `<div class="persona-context-note"><span class="material-symbols-outlined info-icon">person_pin</span> ${step.personaContext[state.selectedPersona]}</div>`
+                    : '';
 
-            return `
+                return `
             <div class="timeline-node ${isActive ? 'active' : ''}" data-id="${step.id}" style="--step-color:${color}" tabindex="0" role="button" aria-expanded="${isActive}">
                 <div class="timeline-marker-wrap">
                     <div class="step-icon-svg">${icon}</div>
-                    ${i < total - 1 ? `<div class="step-connector" style="background:linear-gradient(180deg,${color}44,${stepColors[i+1]}44)"></div>` : ''}
+                    ${i < total - 1 ? `<div class="step-connector" style="background:linear-gradient(180deg,${color}44,${stepColors[i + 1]}44)"></div>` : ''}
                 </div>
                 <div class="timeline-content">
                     <div class="timeline-header-row">
@@ -117,12 +156,13 @@ export const views = {
                     </div>
                 </div>
             </div>`;
-        }).join('');
+            })
+            .join('');
 
         return `
             <div class="view-header fade-in">
                 <h2><span class="material-symbols-outlined">linear_scale</span> Election Timeline</h2>
-                <p>Click any step to expand details tailored to your <strong>${electionData.personas.find(p=>p.id===state.selectedPersona).label}</strong> persona.</p>
+                <p>Click any step to expand details tailored to your <strong>${electionData.personas.find((p) => p.id === state.selectedPersona).label}</strong> persona.</p>
             </div>
 
             <div class="progress-bar-card fade-in delay-1">
@@ -132,7 +172,7 @@ export const views = {
                 </div>
                 <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
                 <div class="progress-steps">
-                    ${electionData.timeline.map((s,i) => `<div class="prog-dot ${i <= activeIdx ? 'done' : ''}" title="${s.title}" style="--dot-color:${stepColors[i]}"></div>`).join('')}
+                    ${electionData.timeline.map((s, i) => `<div class="prog-dot ${i <= activeIdx ? 'done' : ''}" title="${s.title}" style="--dot-color:${stepColors[i]}"></div>`).join('')}
                 </div>
             </div>
 
@@ -141,13 +181,17 @@ export const views = {
     },
 
     assistant: () => {
-        const msgs = state.chatHistory.map(msg => `
+        const msgs = state.chatHistory
+            .map(
+                (msg) => `
             <div class="message ${msg.sender}-message anim-msg">
                 ${msg.sender === 'assistant' ? `<div class="msg-avatar">${svgIcons.bot}</div>` : ''}
                 <div class="msg-bubble">${msg.isHTML ? msg.text : sanitizeText(msg.text)}</div>
-            </div>`).join('');
+            </div>`
+            )
+            .join('');
 
-        const chips = electionData.suggestedPrompts.map(p => `<button class="prompt-chip">${p}</button>`).join('');
+        const chips = electionData.suggestedPrompts.map((p) => `<button class="prompt-chip">${p}</button>`).join('');
 
         return `
             <div class="view-header fade-in">
@@ -169,8 +213,10 @@ export const views = {
     },
 
     learning: () => {
-        const topicColors = ['#38bdf8','#a78bfa','#34d399','#fbbf24'];
-        const cards = electionData.learningHub.map((t, i) => `
+        const topicColors = ['#38bdf8', '#a78bfa', '#34d399', '#fbbf24'];
+        const cards = electionData.learningHub
+            .map(
+                (t, i) => `
             <div class="learning-card fade-in" style="--topic-color:${topicColors[i]};animation-delay:${i * 0.08}s">
                 <div class="learning-icon" style="background:${topicColors[i]}18;border-color:${topicColors[i]}33">
                     <span class="material-symbols-outlined" style="color:${topicColors[i]};font-size:1.8rem">${t.icon}</span>
@@ -180,7 +226,9 @@ export const views = {
                     <h3>${t.title}</h3>
                     <div class="topic-body">${t.content}</div>
                 </div>
-            </div>`).join('');
+            </div>`
+            )
+            .join('');
 
         return `
             <div class="view-header fade-in">
@@ -197,11 +245,15 @@ export const views = {
         const depth = depthMap[state.decisionFlowCurrentNode] || 0;
         const pct = Math.round((depth / total) * 100);
 
-        const opts = node.options.map(o => `
+        const opts = node.options
+            .map(
+                (o) => `
             <button class="decision-btn" data-next="${o.next || ''}" data-action="${o.action || ''}">
                 <span class="decision-btn-text">${o.text}</span>
                 <span class="material-symbols-outlined" style="color:var(--text-accent)">arrow_forward_ios</span>
-            </button>`).join('');
+            </button>`
+            )
+            .join('');
 
         return `
             <div class="view-header fade-in">
@@ -233,7 +285,7 @@ export const views = {
                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="14" fill="#1a73e8"/><path d="M14 7l2.5 5 5.5.8-4 3.9.9 5.3L14 19.5l-4.9 2.5.9-5.3-4-3.9 5.5-.8z" fill="white"/></svg>
                 <h3>Google Gemini Integration</h3>
             </div>
-            <p class="text-secondary mt-2 mb-4">Connect your Gemini API key to unlock dynamic AI-powered answers in the Assistant. Keys are stored only in <strong>your browser</strong> — never sent to any server.</p>
+            <p class="text-secondary mt-2 mb-4">Connect your Gemini API key to unlock dynamic AI-powered answers in the Assistant. Keys are securely synced with your profile if logged in, or stored locally if not.</p>
             <div class="form-group">
                 <label for="api-key-input">Gemini API Key</label>
                 <input type="password" id="api-key-input" placeholder="AIzaSy..." value="${state.geminiApiKey}">
@@ -250,8 +302,8 @@ export const views = {
 
 export const attachEvents = (currentRoute) => {
     if (currentRoute === 'home') {
-        document.querySelectorAll('.persona-btn').forEach(btn => {
-            btn.addEventListener('click', e => {
+        document.querySelectorAll('.persona-btn').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
                 setPersona(e.currentTarget.dataset.id);
                 window.dispatchEvent(new HashChangeEvent('hashchange'));
             });
@@ -259,7 +311,7 @@ export const attachEvents = (currentRoute) => {
     }
 
     if (currentRoute === 'timeline') {
-        document.querySelectorAll('.timeline-node').forEach(node => {
+        document.querySelectorAll('.timeline-node').forEach((node) => {
             const activate = (e) => {
                 if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
                 const id = e.currentTarget.dataset.id;
@@ -298,26 +350,36 @@ export const attachEvents = (currentRoute) => {
         };
 
         sendBtn?.addEventListener('click', handleSend);
-        input?.addEventListener('keypress', e => { if (e.key === 'Enter') handleSend(); });
-        document.querySelectorAll('.prompt-chip').forEach(chip => {
-            chip.addEventListener('click', e => { input.value = e.target.textContent.trim(); handleSend(); });
+        input?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+        document.querySelectorAll('.prompt-chip').forEach((chip) => {
+            chip.addEventListener('click', (e) => {
+                input.value = e.target.textContent.trim();
+                handleSend();
+            });
         });
     }
 
     if (currentRoute === 'guidance') {
-        document.querySelectorAll('.decision-btn').forEach(btn => {
-            btn.addEventListener('click', e => {
+        document.querySelectorAll('.decision-btn').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
                 const next = e.currentTarget.dataset.next;
                 const action = e.currentTarget.dataset.action;
-                if (next) { setDecisionFlowNode(next); window.dispatchEvent(new HashChangeEvent('hashchange')); }
-                else if (action) {
+                if (next) {
+                    setDecisionFlowNode(next);
+                    window.dispatchEvent(new HashChangeEvent('hashchange'));
+                } else if (action) {
                     document.getElementById('decision-options').style.display = 'none';
                     const res = document.getElementById('decision-result');
                     res.style.display = 'block';
                     res.innerHTML = `<span class="material-symbols-outlined" style="color:var(--success);font-size:2rem">check_circle</span><br><strong>Recommended Next Step:</strong><br><br>${action}`;
                     const reset = document.getElementById('decision-reset');
                     reset.style.display = 'inline-flex';
-                    reset.addEventListener('click', () => { setDecisionFlowNode('start'); window.dispatchEvent(new HashChangeEvent('hashchange')); });
+                    reset.addEventListener('click', () => {
+                        setDecisionFlowNode('start');
+                        window.dispatchEvent(new HashChangeEvent('hashchange'));
+                    });
                 }
             });
         });
@@ -327,9 +389,14 @@ export const attachEvents = (currentRoute) => {
         document.getElementById('save-api-key')?.addEventListener('click', () => {
             const val = document.getElementById('api-key-input').value;
             setApiKey(val);
+            if (state.user) {
+                saveUserApiKey(state.user.uid, val);
+            }
             const msg = document.getElementById('api-status-msg');
-            msg.innerHTML = '<span style="color:var(--success)">✓ Saved securely in your browser.</span>';
-            setTimeout(() => { msg.innerHTML = ''; }, 3000);
+            msg.innerHTML = '<span style="color:var(--success)">✓ Saved successfully.</span>';
+            setTimeout(() => {
+                msg.innerHTML = '';
+            }, 3000);
         });
     }
 };
