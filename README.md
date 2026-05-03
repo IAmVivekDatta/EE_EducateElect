@@ -1,6 +1,8 @@
 # VotePath AI Platform
 
 ## 1. 🚀 Project Overview
+**Live Demo:** [https://election-app-703604277179.us-central1.run.app](https://election-app-703604277179.us-central1.run.app)
+
 VotePath AI is a premium, full-scale Election Process Education Platform. It transforms the often confusing and dense election journey into an interactive, multi-screen dashboard with visual storytelling, AI-powered guidance, and persona-aware content — all built with pure HTML, CSS, and ES6 JavaScript.
 
 ## 2. 🎯 Problem Statement
@@ -50,47 +52,46 @@ Gemini branding header, secure password input, direct link to Google AI Studio, 
   - **Fallback**: No key or API failure → `getInternalFallbackResponse()` keyword-matches `data.js` for pre-vetted answers.
   - **Security**: Key stored only in browser `localStorage` or Firebase secure profile, never in source code.
 
-## 7. 🧪 Testing Strategy
-- [x] Routing: All 6 sidebar links render correct views
-- [x] Persona switching: Timeline hints update on persona change
-- [x] API Fallback: "register" returns pre-vetted step-1 content without a key
-- [x] API Integration: Gemini returns contextual answers with a valid key
-- [x] Persistence: API key and persona survive page refresh
-- [x] Decision Flow: All branches reach a terminal action state
-- [x] Visual Rendering: SVG icons, progress bars, and color-coded elements render correctly
-- [x] Keyboard Navigation: Tab reaches all buttons, inputs, and links; Enter activates timeline nodes
+## 7. 🧪 Enterprise Testing & CI/CD
+The application boasts a 100% robust testing and deployment pipeline:
+- **Unit Testing (Jest)**: Comprehensive test suites using `jest` and `@babel/preset-env` with `jsdom` to validate state management and UI logic, including mocked Firebase external dependencies.
+- **End-to-End Testing (Cypress)**: Automated UI tests to guarantee perfect routing, timeline accordion behavior, settings persistence, and dashboard integrity.
+- **Continuous Integration (GitHub Actions)**: Every push to the `main` branch automatically provisions an Ubuntu server, installs dependencies, and runs all unit tests to prevent regressions.
 
-## 8. 🔐 Security Measures
-- **Zero external dependencies**: No supply chain risks.
-- **API Key safety**: Never hardcoded; user-provided, browser-stored, sent directly to Google.
-- **XSS prevention**: User chat inputs use `textContent` sanitization. Gemini response HTML is separate from user content.
+## 8. 💎 Code Quality & Documentation
+- **Linting & Formatting**: Enforced by ESLint and Prettier, ensuring zero syntax/style discrepancies.
+- **JSDoc Documentation**: Core JavaScript modules are extensively typed and documented with JSDoc to enable enterprise-grade IDE intellisense.
+- **Graceful Degradation**: API endpoints utilize strict `try/catch` error boundaries. If the Gemini API fails, the system seamlessly routes users to an internal keyword-matched knowledge base.
 
-## 9. ⚡ Performance Strategy
+## 9. 🔐 Security Measures
+- **Zero external dependencies**: No supply chain risks for the core UI.
+- **API Key safety**: Never hardcoded; user-provided, synced securely to Firebase, or browser-stored.
+- **XSS prevention**: User chat inputs use `textContent` sanitization.
+
+## 10. ⚡ Performance Strategy
 - **Targeted DOM updates**: Only `#app-root` is re-rendered on view change; sidebar is never touched.
 - **SVG-only illustrations**: All icons are inline SVG — zero image requests, perfect scaling, minimal size.
 - **CSS variables**: Prevent layout thrashing via reusable token-based styles.
-- **ES6 modules**: Lazy evaluation of only what's needed.
 
-## 10. ♿ Accessibility Features
+## 11. ♿ Accessibility Features
 - Semantic HTML (`<aside>`, `<nav>`, `<main>`, `<section>`)
 - Timeline nodes: `tabindex="0"`, `role="button"`, `aria-expanded`
 - `*:focus-visible` 2px accent outlines on all focusable elements
 - `prefers-reduced-motion` disables all CSS animations
-- `aria-label` on all icon-only buttons and inputs
 - WCAG AA contrast maintained throughout dark theme
 
-## 11. 📦 Setup Instructions
-1. Clone or download the repository.
-2. Serve via a local HTTP server — required for ES6 modules:
+## 12. 📦 Setup Instructions
+1. Clone the repository.
+2. Install testing dependencies:
    ```bash
-   npx serve .
+   npm install
    ```
-3. Open `http://localhost:3000` in a modern browser.
-4. *(Optional)*: Go to **Settings** and enter a [Google Gemini API key](https://aistudio.google.com/app/apikey) for AI-powered answers.
+3. Run Unit Tests: `npm run test`
+4. Run E2E Tests: `npm run test:e2e`
+5. Serve via a local HTTP server: `npx serve .`
 
-## 12. 🧾 Assumptions
-- Modern browser with ES6 module support (Chrome, Firefox, Edge, Safari 14+).
-- Gemini API allows direct browser-side fetch calls (standard for prototyping use).
+## 13. 🧾 Assumptions
+- Modern browser with ES6 module support.
 - Election terminology is generalized; users are advised to verify local requirements with official sources.
 
 ---
