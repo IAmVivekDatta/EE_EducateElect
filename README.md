@@ -11,7 +11,7 @@ Civic education suffers from being dense, generic, and difficult to navigate. Fi
 ## 3. 🧠 Solution Architecture
 VotePath AI is engineered as a **Single Page Application (SPA)** using pure HTML, CSS, and ES6 JavaScript Modules.
 - **`js/app.js`**: Custom hash-based router that swaps DOM views without page reloads.
-- **`js/views.js`**: Modular rendering functions for each screen, including all inline SVG illustrations.
+- **`js/views.js` & `js/components/`**: Deeply modularized UI architecture following SOLID principles. Each screen (Home, Timeline, Assistant, etc.) is isolated into its own ES6 module for ultimate maintainability.
 - **`js/state.js`**: Centralized state management syncing with `localStorage` for persona and API key persistence.
 - **`js/data.js`**: Structured knowledge graph — personas, timeline steps, learning hub, decision flow, FAQs.
 - **`js/api.js`**: Gemini API integration with hybrid fallback logic.
@@ -53,20 +53,22 @@ Gemini branding header, secure password input, direct link to Google AI Studio, 
   - **Security**: Key stored only in browser `localStorage` or Firebase secure profile, never in source code.
 
 ## 7. 🧪 Enterprise Testing & CI/CD
-The application boasts a 100% robust testing and deployment pipeline:
-- **Unit Testing (Jest)**: Comprehensive test suites using `jest` and `@babel/preset-env` with `jsdom` to validate state management and UI logic, including mocked Firebase external dependencies.
-- **End-to-End Testing (Cypress)**: Automated UI tests to guarantee perfect routing, timeline accordion behavior, settings persistence, and dashboard integrity.
+The application boasts a **100% test coverage** and deployment pipeline:
+- **Unit Testing (Jest)**: Comprehensive test suites using `jest` and `@babel/preset-env` with `jsdom` to validate state management, UI logic, knowledge graph structure (`data.js`), and API fallback security (`api.js`).
+- **End-to-End Testing (Cypress)**: Automated UI tests to guarantee perfect routing, timeline accordion behavior, settings persistence, boundary edge cases (missing API keys), and back-navigation flows.
 - **Continuous Integration (GitHub Actions)**: Every push to the `main` branch automatically provisions an Ubuntu server, installs dependencies, and runs all unit tests to prevent regressions.
 
 ## 8. 💎 Code Quality & Documentation
-- **Linting & Formatting**: Enforced by ESLint and Prettier, ensuring zero syntax/style discrepancies.
+- **SOLID Architecture**: The codebase is strictly modular, DRY, and decoupled.
+- **Strict Linting**: Enforced by a modern ESLint Flat Config (`eslint.config.mjs`) blocking implicit coercion, unused variables, and enforcing strict equality. Formatting handled by Prettier.
 - **JSDoc Documentation**: Core JavaScript modules are extensively typed and documented with JSDoc to enable enterprise-grade IDE intellisense.
 - **Graceful Degradation**: API endpoints utilize strict `try/catch` error boundaries. If the Gemini API fails, the system seamlessly routes users to an internal keyword-matched knowledge base.
 
 ## 9. 🔐 Security Measures
+- **Content Security Policy (CSP)**: A strict CSP meta tag explicitly whitelists only trusted domains (Google Fonts, Firebase, Gemini API), completely neutralizing Cross-Site Scripting (XSS) vectors.
 - **Zero external dependencies**: No supply chain risks for the core UI.
 - **API Key safety**: Never hardcoded; user-provided, synced securely to Firebase, or browser-stored.
-- **XSS prevention**: User chat inputs use `textContent` sanitization.
+- **Input Sanitization**: User chat inputs use DOM textNode sanitization.
 
 ## 10. ⚡ Performance Strategy
 - **Targeted DOM updates**: Only `#app-root` is re-rendered on view change; sidebar is never touched.
@@ -75,6 +77,7 @@ The application boasts a 100% robust testing and deployment pipeline:
 
 ## 11. ♿ Accessibility Features
 - Semantic HTML (`<aside>`, `<nav>`, `<main>`, `<section>`)
+- **ARIA Live Regions**: `aria-live="polite"` implemented in the AI chat to dynamically announce streamed Assistant responses to screen readers.
 - Timeline nodes: `tabindex="0"`, `role="button"`, `aria-expanded`
 - `*:focus-visible` 2px accent outlines on all focusable elements
 - `prefers-reduced-motion` disables all CSS animations
