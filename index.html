@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VotePath AI | Election Process Platform</title>
+    <meta name="description" content="A comprehensive, interactive platform for election process education.">
+    
+    <!-- Google Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="app-layout">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span class="material-symbols-outlined brand-icon">account_balance</span>
+                <h1>VotePath</h1>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#home" class="active"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+                <a href="#timeline"><span class="material-symbols-outlined">linear_scale</span> Timeline</a>
+                <a href="#assistant"><span class="material-symbols-outlined">smart_toy</span> AI Assistant</a>
+                <a href="#learning"><span class="material-symbols-outlined">library_books</span> Learning Hub</a>
+                <a href="#guidance"><span class="material-symbols-outlined">explore</span> Smart Guidance</a>
+                <div class="nav-divider"></div>
+                <a href="#settings"><span class="material-symbols-outlined">settings</span> Settings</a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <p>VotePath Platform &copy; 2026</p>
+                <p class="small">Educational purposes only.</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div id="app-root" class="app-root">
+                <!-- Views will be dynamically injected here by router -->
+            </div>
+        </main>
+
+    </div>
+
+    <!-- Application Logic (ES Modules) -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
