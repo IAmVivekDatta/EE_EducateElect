@@ -47,4 +47,28 @@ describe('VotePath Application E2E Tests', () => {
             expect(win.localStorage.getItem('votePath_geminiApiKey')).to.eq('test_gemini_key_123');
         });
     });
+
+    it('handles assistant fallback mode when no API key is provided', () => {
+        // Clear localStorage to ensure no key is set
+        cy.clearLocalStorage();
+        cy.visit('/#assistant');
+        
+        // Assert warning banner exists
+        cy.get('.warning-banner').should('contain', 'Fallback mode');
+        
+        // Test fallback response
+        cy.get('#assistant-input').type('how to register{enter}');
+        cy.get('.assistant-message .msg-bubble').last().should('contain', 'register');
+    });
+
+    it('navigates backwards correctly using browser history', () => {
+        cy.visit('/');
+        cy.get('.dash-card[href="#timeline"]').click();
+        cy.url().should('include', '#timeline');
+        
+        // Go back
+        cy.go('back');
+        cy.url().should('not.include', '#timeline');
+        cy.get('h1').should('contain', 'VotePath');
+    });
 });

@@ -66,7 +66,9 @@ const renderAuth = () => {
         document.getElementById('login-btn')?.addEventListener('click', async () => {
             try {
                 await loginWithGoogle();
-            } catch (e) {}
+            } catch (error) {
+                console.warn('Login failed:', error);
+            }
         });
     }
 };
